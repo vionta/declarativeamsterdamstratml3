@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/resources/xsltforms/xsltforms.xsl" type="text/xsl"?>
+<?xsltforms-options debug="no"?>
+<?css-conversion no?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ev="http://www.w3.org/2001/xml-events"
+      xmlns:html="http://www.w3.org/1999/xhtml"
+      xmlns:xf="http://www.w3.org/2002/xforms"
+      xmlns:rsu="http://www.vionta.net/xsd/stratml-results/1.0"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Style-Type" content="text/plain; charset=us-ascii"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="-1"/>
+    <title>Evaluation</title>
+    <link rel="stylesheet" type="text/css" href="/resources/css/style.css"/>
+    <xf:model id="m">
+      <xf:instance id="entity" resource="/documents/evaluation-configuration.xml"/>
+      <xf:bind ref="instance('entity')//@enabled" type="xf:boolean" />
+      <xf:submission id="save" method="put" replace="none"
+		     instance="entity" action="/documents/evaluation-configuration.xml" >
+        <xf:message ev:event="xforms-submit-error" ev:default="cancel">A submission error
+	(<xf:output value="event('error-type')"/>) occurred.</xf:message>
+      </xf:submission>
+      <xf:submission id="list" reload="page"
+                        method="get" action="/home.html"/>
+    </xf:model>
+  </head>
+  <body>
+    <h1>Evaluation Configuration</h1>
+    <div xmlns="">
+
+      <xf:label >General Plan Result Threshold  
+      <xf:input ref="threshold" />
+      </xf:label>
+
+      <h2>Evaluation Configuration</h2>
+      
+      <xf:label >Pesmistic
+      <xf:input ref="weight/pesimistic" />
+      </xf:label>
+      
+      <xf:label >Expected
+      <xf:input ref="weight/expected" />
+      </xf:label>
+
+      <xf:label >Optimistic
+      <xf:input ref="weight/optimistic" />
+      </xf:label>
+      
+    </div>
+      <div>
+         <div class="form-action-button-set">
+            <xf:trigger>
+               <xf:label>Cancel</xf:label>
+               <xf:action ev:event="DOMActivate">
+                  <xf:send submission="list"/>
+               </xf:action>
+            </xf:trigger>
+            <xf:trigger>
+               <xf:label>Save</xf:label>
+               <xf:action ev:event="DOMActivate">
+                  <xf:message level="ephemeral">Saving document ...</xf:message>
+                  <xf:send submission="save"/>
+                  <xf:send submission="list"/>
+               </xf:action>
+            </xf:trigger>
+         </div>
+      </div>
+  </body>
+</html>
+

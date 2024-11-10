@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="xforms-form-generator" basedir="." default="build">
+
+  <!-- Arousa Configuration directory -->
+  <property name="config.dir" value="conf"></property>
+
+  <!-- Main build properties -->
+  <property file="${config.dir}/build.properties" ></property>
+
+  <!-- Arousa build properties -->  
+  <import file="${config.dir}/arousa-build.xml" />
+
+  <!-- Xproc Import III  -->
+  <import file="${config.dir}/xproc.xml" /> 
+  
+  <!-- 
+       <import file="${system.ant.config.dir}/curl.xml"/>
+  -->
+  <!-- Calabash 1.x build file 
+       Import of xproc 1.0 / Calabash tasks and macros
+  -->
+  <import file="${config.dir}/calabash.xml"/>
+  
+  <target name="help"  >
+    <echo>
+      Main Targets : clean, build 
+    </echo>
+  </target>
+
+  <target name="clean"  >
+    <echo>
+      Cleaning ....... (add your cleaning steps here)
+    </echo>
+    <delete dir="build" />
+  </target>
+
+  <target name="prepare"  >
+    <echo>
+      Preparing
+      - Copies issue list applications content to build
+    </echo>
+    <copy todir="build" >
+      <fileset dir="test/resources/issue-list" includes="**"/>
+    </copy>
+    <copy todir="build" >
+      <fileset dir="src/salvora" >
+	<include name="form/*.xml" />
+	<include name="data/*.xml" />
+  	<include name="conf/**" />
+  	<include name="trigger/**" />
+  	<include name="*.xml" />
+      </fileset>
+    </copy>
+    <copy todir="build/form/resources" >
+      <fileset dir="src/resources" >
+	<include name="**" />
+	<exclude name="**/*.*~" />
+	<exclude name="**/.old/**" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="load-samples" >
+    <echo>
+      Loading samples
+    </echo>
+    <copy todir="test/data/stratml-part-samples" >
+      <fileset
+	  dir="../schema-nhtml-report/build"
+	  includes="*/*.xml"/>
+    </copy>
+  </target>
+  
+
+    <target name="build" depends="prepare" >
+    <echo>
+      Building  ....... Doest almost nothing 
+    </echo>
+
+    <delete dir="temp" />
+    <!--
+    <xslt style="src/xsl/generate-form-fields.xsl"
+	  basedir="test/data"
+	  destdir="temp" 
+	  includes="*.xml"
+	  extension="-form.xml" >
+    </xslt>
+    <xslt style="src/xsl/xform-content-wrap.xsl"
+	  basedir="temp"
+	  destdir="build/form" 
+	  includes="*.xml"
+	  extension=".xml" >
+    </xslt>    
+    <xslt style="src/xsl/generate-template-document.xsl"
+	  basedir="test/data"
+	  destdir="build/data" 
+	  includes="*.xml"
+	  extension="-template.xml" >
+	  </xslt>
+	  -->
+    <!--
+	
+	  in="test/data/StratMLPart3.prescript.xml"
+	  out="build/StratMLPart3.template.xml"
+	  -->
+    <!-- Directory Xslt example -->
+    <!--
+    <xslt style="src/tasks/fodstasksaxml.xsl"
+	  basedir="temp"
+	  destdir="build" 
+	  includes="*.xml"
+	  extension="-tasks.xml"
+	  />
+    -->
+    <!-- XProc 3.0 Example........... 
+    <echo>Running a simple xproc file</echo>
+    <xproc-src src="src/xpl/hello.xpl" />
+    <echo>Running a simple task report on this build file</echo>
+    <xproc doc="build.xml" src="src/xpl/build-report.xpl" />
+    -->
+    <!-- XProc 1.0 Example........... -->
+    <!--
+	<calab src="src/timeline/timeline.xpl"/>	
+    -->
+
+    <!-- XQuery Example........... -->
+    <!--
+	TODO :
+    -->
+  </target>
+
+  <target name="run"  >
+    <echo>Form localhost/form/StratMLPart3.prescript.comp1-form.xml</echo>
+    <java dir="build" 
+	jar="build/salvora-beta-0.9.9-fat.jar"
+	  fork="true"
+	  failonerror="true">
+      <arg value="-m:mapping-simple.xml"/>
+      <arg value="-e:false"/>
+      <classpath>
+	<pathelement location="build/salvora-beta-0.9.9-fat.jar"/>
+      </classpath>
+    </java>
+  </target>
+
+    <target name="debug"  >
+    <echo>Form localhost/form/StratMLPart3.prescript.comp1-form.xml</echo>
+    <java dir="build" 
+	jar="build/salvora-beta-0.9.9-fat.debug.jar"
+	  fork="true"
+	  failonerror="true">
+      <arg value="-m:mapping-simple.xml"/>
+      <arg value="-e:false"/>
+      <classpath>
+	<pathelement location="build/salvora-beta-0.9.9-fat.debug.jar"/>
+      </classpath>
+    </java>
+  </target>
+
+
+  <!-- .... Run the main transformations .... -->
+  <target name="test" depends="prepare, build" >
+    <copy todir="build/data" >
+      <fileset
+	  dir="test/data"
+	  includes="plan-template.xml"/>
+    </copy>
+    <copy todir="build/form" >
+      <fileset
+	  dir="src/salvora/form"
+	  includes="*.xml"/>
+    </copy>
+    <copy todir="build/trigger" >
+      <fileset
+	  dir="src/salvora/trigger"
+	  includes="*.*"/>
+    </copy>
+    <!-- ..... Generate form fields ........ -->
+    <!-- Simpler examples not needed now .....
+    <xslt
+	style="src/xsl/generate-form-fields.xsl"
+	  basedir="test/data/stratml-part-samples/simple"
+	  destdir="temp" 
+	  includes="*.xml"
+	  extension="-form.xml" >
+    </xslt>
+    -->
+    <!-- ..... Form fields ............-->
+    <!--
+    <move
+	file="test/data/stratml-part-samples/stratml3/StratMLPart3_20241108.pre.xml"
+	tofile="test/data/stratml-part-samples/stratml3/stratml.xml" failonerror="false"/>
+    -->
+    <xslt
+	style="src/xsl/generate-form-fields.xsl"
+	  basedir="test/data/stratml-part-samples/stratml3"
+	  destdir="temp/pre-form" 
+	  includes="*.xml"
+	  extension=".xml" >
+    </xslt>
+
+    <!-- ..... Translate labels ............-->
+    <xslt
+	style="src/xsl/adjust-labels.xsl"
+	basedir="temp/pre-form"
+	destdir="temp/form" 
+	includes="Performance*.xml"
+	extension=".xml" >
+    </xslt>
+
+
+    <!-- ..... XForms Html Structure ............-->
+    <xslt style="src/xsl/xform-content-wrap.xsl"
+	  in="temp/form/PerformancePlanOrReport.xml"
+	  out="build/form/PerformancePlanOrReport.xml">
+      <param name="entity-name" expression="PerformancePlanOrReport"/>
+    </xslt>
+    
+
+    <!--
+
+src/xsl/ <param name="date" expression="07-01-2000"/>
+    -->
+
+    <!-- ............ Initial Document ........... -->
+    <!--
+    <xslt style="src/xsl/generate-initial-document.xsl"
+	  basedir="test/data/stratml-part-samples/simple"
+	  destdir="build/data" 
+	  includes="*.xml"
+	  extension="-initial.xml" >
+    </xslt>
+    -->
+    <!-- Base document ............... -->
+    <xslt style="src/xsl/generate-initial-document.xsl"
+	  basedir="test/data/stratml-part-samples/stratml3"
+	  destdir="build/data" 
+	  includes="*.xml"
+	  extension="-initial.xml" >
+    </xslt>
+
+
+    <move
+	file="build/data/stratml-initial.xml"
+	tofile="build/conf/template/stratml/template-initial.xml" failonerror="false"/>
+    <move
+	file="build/data/PerformancePlanOrReport-initial.xml"
+	tofile="build/conf/template/PerformancePlanOrReport/template.xml" failonerror="false"/>
+
+    <!--
+    <xslt style="src/xsl/generate-template-copy-document-1.xsl"
+	  basedir="test/data/stratml-part-samples/simple"
+	  destdir="build/temp1" 
+	  includes="*.xml"
+	  extension=".xml" >
+    </xslt>
+    -->
+    <xslt style="src/xsl/generate-template-copy-document-1.xsl"
+	  basedir="test/data/stratml-part-samples/stratml3"
+	  destdir="temp/copy-dupliacteds" 
+	  includes="*.xml"
+	  extension=".xml" >
+    </xslt>
+
+    <xslt style="src/xsl/copy-template-remove-duplicated.xsl"
+	  basedir="temp/copy-dupliacteds"
+	  destdir="build/data" 
+	  includes="*.xml"
+	  extension="-template.xml" >
+
+    </xslt>
+    
+    <move
+	file="build/data/stratml-template.xml"
+	tofile="build/conf/template/stratml/template-parts.xml" failonerror="false"/>
+    <move
+	file="build/data/PerformancePlanOrReport-template.xml"
+	tofile="build/conf/template/PerformancePlanOrReport/template-parts.xml" failonerror="false"/>
+
+    <!-- ............ Select options file ................ -->
+    <echo> Generating options file</echo>
+    <xslt style="src/xsl/generate-options-file.xsl"
+	  basedir="test/data/stratml-part-samples/stratml3"
+	  destdir="build/conf" 
+	  includes="*.xml"
+	  extension="-options.xml" >
+    </xslt>
+
+    <move
+	file="build/conf/PerformancePlanOrReport-options.xml"
+	tofile="build/conf/PerformancePlanOrReport-options.xml" failonerror="false"/>
+    
+
+
+    <!--
+    <replace file="build/form/objective.pre-form.xml" token="GENERATION_FILE_NAME" value="objective"/>
+    <replace file="build/form/one-element.pre-form.xml" token="GENERATION_FILE_NAME" value="one-element"/>
+    <replace file="build/form/one-element-no-attributes.pre-form.xml" token="GENERATION_FILE_NAME" value="one-element-no-attributes"/>
+    <replace file="build/form/one-element-one-reference.pre-form.xml" token="GENERATION_FILE_NAME" value="one-element-one-reference"/>
+    <replace file="build/form/strategy-framework.pre-form.xml" token="GENERATION_FILE_NAME" value="strategy-framework"/>
+    -->
+    <!--
+    <replace file="build/form/StratMLPart3_20140821.pre-form.xml" token="GENERATION_FILE_NAME" value="StratMLPart3_20140821"/>
+    <replace file="build/form/StratMLPart3_20241108.pre-form.xml" token="GENERATION_FILE_NAME" value="StratMLPart3_20241108"/>
+-->
+    <echo>Test Url http://localhost:8080/form/test-part1-form.xml</echo>
+    <echo>Test Url http://localhost:8080/form/index.html</echo>
+    <echo> Ultimo plan StratMLPart3_20140821.pre-form.xml</echo>
+    <echo>StratMLPart3_20241108.pre-form.xml</echo>
+    <copy todir="build/form" >
+      <fileset
+	  dir="src/resources/html"
+	  includes="*.html"/>
+    </copy>
+    
+  </target>
+
+  <target name="package" >
+    <echo>Distributing project as an arousa dependency</echo>
+    <antcall target="arousa-package" />
+  </target>
+
+  <target name="dist" >
+    <echo>Distributing project as an arousa dependency</echo>
+    <antcall target="arousa-package" />
+    <antcall target="arousa-publish-dependency" />
+  </target>
+
+  <target name="generate-labels" >
+    <xslt style="src/xsl/generate-labels-pre-document.xsl"
+	  basedir="test/data/stratml-part-samples/stratml3"
+	  destdir="temp/labels-pre-doucment" 
+	  includes="*.xml"
+	  extension=".xml" >
+    </xslt>
+  </target>
+
+
+
+  <target name="check" depends="prepare" >
+    <delete  >
+      <fileset    dir="build/report/plan-evaluation"
+	  includes="*.html"/>
+    </delete>
+  <delete  >
+      <fileset    dir="build/report/plan-evaluation"
+	  includes="*.html"/>
+  </delete>
+  <get src="http://localhost:8080/plan-evaluation/testing-plan-1.xml" dest="temp-tirar" />
+
+  </target>
+
+
+</project>
+

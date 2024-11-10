@@ -1,0 +1,40 @@
+/*
+@import "xforms/debug.css";
+*/
+/*
+@import "xforms/main-elements-position.css";
+*/
+/* Main sections position */
+@import "xforms/stratml-form-main-position.css";
+
+@import "xforms/form-elements-position.css";
+
+/* @import "xforms/main-position.css"; */
+@import "xforms/stratml-elements-position.css";
+
+@import "xforms/stratml-form-skin.css";
+
+
+:root {
+  --color-one: brown;
+  --color-two: brown;
+  --color-three: brown;
+  --color-four: brown;
+  --micro-margin: 0.05em;
+  --mini-margin: 0.1em;
+  --simple-margin: 0.2em;
+  --double-margin: 0.4em;
+  --triple-margin: 0.8em;
+  --cuadruple-margin: 1.2em;
+}
+
+
+
+
+
+
+
+
+
+
+
